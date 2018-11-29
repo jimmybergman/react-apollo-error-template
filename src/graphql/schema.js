@@ -1,33 +1,56 @@
 import {
-  GraphQLSchema,
-  GraphQLObjectType,
+  GraphQLBoolean,
   GraphQLID,
-  GraphQLString,
   GraphQLList,
+  GraphQLObjectType,
+  GraphQLSchema,
 } from 'graphql';
 
-const PersonType = new GraphQLObjectType({
-  name: 'Person',
+const ItemType = new GraphQLObjectType({
+  name: 'Item',
   fields: {
-    id: { type: GraphQLID },
-    name: { type: GraphQLString },
+    someValue: {type: GraphQLBoolean},
+    id: {type: GraphQLID},
   },
 });
 
-const peopleData = [
-  { id: 1, name: 'John Smith' },
-  { id: 2, name: 'Sara Smith' },
-  { id: 3, name: 'Budd Deey' },
-];
+const CartType = new GraphQLObjectType({
+  name: 'Cart',
+  fields: {
+    id: {type: GraphQLID},
+    items: {type: new GraphQLList(ItemType)},
+  },
+});
+
+const generateCartData = () => ({
+  id: 'cart',
+  items: [
+    {
+      id: Math.random(),
+      someValue: true,
+    }
+  ],
+});
 
 const QueryType = new GraphQLObjectType({
   name: 'Query',
   fields: {
-    people: {
-      type: new GraphQLList(PersonType),
-      resolve: () => peopleData,
+    cart: {
+      type: CartType,
+      resolve: generateCartData,
     },
   },
 });
 
-export const schema = new GraphQLSchema({ query: QueryType });
+const MutationType = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: () => ({
+    changeItems: {
+      type: CartType,
+      description: 'Deletes the old items and gives you new ones',
+      resolve: generateCartData,
+    }
+  }),
+});
+
+export const schema = new GraphQLSchema({ query: QueryType, mutation: MutationType });

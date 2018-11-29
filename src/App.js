@@ -1,48 +1,59 @@
 import React, { Component } from "react";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
+
+const fullQueryGql = gql`
+  query ErrorTemplate {
+    cart {
+      id
+      items {
+        id
+        someValue
+      }
+    }
+  }
+`
+const brokenMutationGql = gql`
+  mutation mockMutation {
+    changeItems {
+      id
+      items {
+        id
+      }
+    }
+  }
+`
+const okayMutationGql = gql`
+  mutation mockMutation {
+    changeItems {
+      id
+      items {
+        id
+        someValue
+      }
+    }
+  }
+`
 
 class App extends Component {
   render() {
-    const { data: { loading, people } } = this.props;
+    const { fullQuery: { loading, error, cart }, brokenMutation, okayMutation } = this.props;
+    const prettyQueryData = JSON.stringify({loading, error, cart}, null, 2);
+
     return (
       <main>
-        <header>
-          <h1>Apollo Client Error Template</h1>
-          <p>
-            This is a template that you can use to demonstrate an error in
-            Apollo Client. Edit the source code and watch your browser window
-            reload with the changes.
-          </p>
-          <p>
-            The code which renders this component lives in{" "}
-            <code>./src/App.js</code>.
-          </p>
-          <p>
-            The GraphQL schema is in <code>./src/graphql/schema</code>.
-            Currently the schema just serves a list of people with names and
-            ids.
-          </p>
-        </header>
-        {loading ? (
-          <p>Loading…</p>
-        ) : (
-          <ul>
-            {people.map(person => <li key={person.id}>{person.name}</li>)}
-          </ul>
-        )}
+        <pre>
+          {prettyQueryData}
+        </pre>
+        <button onClick={() => brokenMutation()}>Breaks data</button>
+        <button onClick={() => okayMutation()}>Works fine (and fixes data, if broken)</button>
       </main>
     );
   }
 }
 
-export default graphql(
-  gql`
-    query ErrorTemplate {
-      people {
-        id
-        name
-      }
-    }
-  `
+export default compose(
+  graphql(fullQueryGql, {name: 'fullQuery'}),
+  graphql(brokenMutationGql, {name: 'brokenMutation'}),
+  graphql(okayMutationGql, {name: 'okayMutation'}),
 )(App);
