@@ -18,26 +18,28 @@ const CartType = new GraphQLObjectType({
   name: 'Cart',
   fields: {
     id: {type: GraphQLID},
-    items: {type: new GraphQLList(ItemType)},
+    item: {type: ItemType},
   },
 });
 
-const generateCartData = () => ({
-  id: 'cart',
-  items: [
-    {
-      id: Math.random(),
-      someValue: true,
-    }
-  ],
-});
+const generateCartData = withItem => {
+  const item = {
+    id: Math.random(),
+    someValue: true,
+  };
+
+  return {
+    id: 'cart',
+    item: withItem ? item : null,
+  };
+}
 
 const QueryType = new GraphQLObjectType({
   name: 'Query',
   fields: {
     cart: {
       type: CartType,
-      resolve: generateCartData,
+      resolve: () => generateCartData(false),
     },
   },
 });
@@ -45,10 +47,10 @@ const QueryType = new GraphQLObjectType({
 const MutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    changeItems: {
+    createItem: {
       type: CartType,
-      description: 'Deletes the old items and gives you new ones',
-      resolve: generateCartData,
+      description: 'Creates an item',
+      resolve: () => generateCartData(true),
     }
   }),
 });

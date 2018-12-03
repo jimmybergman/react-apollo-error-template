@@ -6,7 +6,7 @@ const fullQueryGql = gql`
   query ErrorTemplate {
     cart {
       id
-      items {
+      item {
         id
         someValue
       }
@@ -15,9 +15,9 @@ const fullQueryGql = gql`
 `
 const brokenMutationGql = gql`
   mutation mockMutation {
-    changeItems {
+    createItem {
       id
-      items {
+      item {
         id
       }
     }
@@ -25,9 +25,9 @@ const brokenMutationGql = gql`
 `
 const okayMutationGql = gql`
   mutation mockMutation {
-    changeItems {
+    createItem {
       id
-      items {
+      item {
         id
         someValue
       }
