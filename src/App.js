@@ -53,7 +53,7 @@ class App extends Component {
 }
 
 export default compose(
-  graphql(fullQueryGql, {name: 'fullQuery'}),
+  graphql(fullQueryGql, {name: 'fullQuery', options: { partialRefetch: true } }),
   graphql(brokenMutationGql, {name: 'brokenMutation'}),
   graphql(okayMutationGql, {name: 'okayMutation'}),
 )(App);
